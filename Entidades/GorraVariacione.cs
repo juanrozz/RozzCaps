@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace RozzCaps.Entidades;
+
+public partial class GorraVariacione
+{
+    public int Id { get; set; }
+
+    public int GorraId { get; set; }
+
+    public int ColorId { get; set; }
+
+    public int Stock { get; set; }
+
+    public string Sku { get; set; } = null!;
+
+    public bool Activo { get; set; }
+
+    public virtual Colore Color { get; set; } = null!;
+
+    public virtual Gorra Gorra { get; set; } = null!;
+
+    public virtual ICollection<GorraImagene> GorraImagenes { get; set; } = new List<GorraImagene>();
+}

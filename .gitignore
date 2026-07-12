@@ -1,0 +1,9 @@
+﻿# Ignorar carpetas temporales de Visual Studio y compilación
+.vs/
+bin/
+obj/
+*.user
+
+# Ignorar configuración local con credenciales
+appsettings.json
+appsettings.Development.json
