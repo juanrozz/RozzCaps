@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RozzCaps.DTOs.Response;
 using RozzCaps.DTOs.Resquest;
 using RozzCaps.Entidades;
 
@@ -21,12 +22,12 @@ namespace RozzCaps.Controllers
 
         public async Task<ActionResult> CrearGorra([FromBody] CrearGorraRequestDto request)
         {
-            if (request.CategoriaId <= 0)
+            if (request.Categoria <= 0)
             {
                 return BadRequest("esta actegoria no existe mano");
             }
 
-            Categoria? existe = await _dbContext.Categorias.FirstOrDefaultAsync(e => e.Id == request.CategoriaId);
+            Categoria? existe = await _dbContext.Categorias.FirstOrDefaultAsync(e => e.Id == request.Categoria);
 
             if (existe == null) {
                 return BadRequest("Esta categoria no existe paisano");
@@ -36,16 +37,16 @@ namespace RozzCaps.Controllers
                 return BadRequest("Esta categoria esta inactiva");
             }
 
-            var data = new Gorra
+            Gorra data = new Gorra
             {
                 Nombre = request.Nombre,
                 Descripcion = request.Descripcion,
-                Precio = request.Precio,
-                CategoriaId = request.CategoriaId,
+                Precio = request.Valor,
+                CategoriaId = request.Categoria,
                 Activo = true,
                 GorraVariaciones = request.Variaciones.Select(a => new GorraVariacione
                 {
-                    ColorId= a.ColorId,
+                    ColorId= a.Color,
                     Stock = a.Stock,
                     Sku = a.SKU,
                     Activo = true,
@@ -58,6 +59,28 @@ namespace RozzCaps.Controllers
             };
             await _dbContext.AddAsync(data);
             await _dbContext.SaveChangesAsync();
+
+            CrearGorraResponseDto response = new CrearGorraResponseDto
+            {
+                Nombre = data.Nombre,
+                Descripcion = data.Descripcion,
+                Valor = data.Precio,
+                Categoria = data.CategoriaId,
+                Activo = true,
+                Variaciones = data.GorraVariaciones.Select(a => new GorraVariacionesResponseDto
+                {
+                    Color = a.ColorId,
+                    Stock = a.Stock,
+                    SKU = a.Sku,
+                    Activo = true,
+                    Imagenes = a.GorraImagenes.Select(i => new GorrasImagenesResponseDto
+                    {
+                        Url = i.UrlImagen,
+                        ImagenPrincipal = i.EsPrincipal
+                    }).ToList(),
+                }).ToList()
+            };
+
             return Ok(new
             {
                 Mensaje = "Gorra creada con éxito en la base de datos",
