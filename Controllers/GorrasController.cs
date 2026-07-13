@@ -19,7 +19,7 @@ namespace RozzCaps.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpPost]
+        [HttpPost("Crear")]
 
         public async Task<ActionResult<CrearGorraResponseDto>> CrearGorra([FromBody] CrearGorraRequestDto request)
         {
@@ -70,7 +70,7 @@ namespace RozzCaps.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpGet("Stock")]
         public async Task<ActionResult> MostrarGorras()
         {
             List<Gorra> gorras = await _dbContext.Gorras.Where(g => g.Activo)
@@ -87,5 +87,6 @@ namespace RozzCaps.Controllers
 
             return Ok(response);
         }
+
     }
 }
