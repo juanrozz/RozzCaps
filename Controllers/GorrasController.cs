@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RozzCaps.DTOs.Response;
 using RozzCaps.DTOs.Resquest;
 using RozzCaps.Entidades;
+using RozzCaps.Extensiones;
 
 namespace RozzCaps.Controllers
 {
@@ -20,11 +21,11 @@ namespace RozzCaps.Controllers
 
         [HttpPost]
 
-        public async Task<ActionResult> CrearGorra([FromBody] CrearGorraRequestDto request)
+        public async Task<ActionResult<CrearGorraResponseDto>> CrearGorra([FromBody] CrearGorraRequestDto request)
         {
             if (request.Categoria <= 0)
             {
-                return BadRequest("esta actegoria no existe mano");
+                return BadRequest("esta categoria no existe mano");
             }
 
             Categoria? existe = await _dbContext.Categorias.FirstOrDefaultAsync(e => e.Id == request.Categoria);
@@ -60,34 +61,31 @@ namespace RozzCaps.Controllers
             await _dbContext.AddAsync(data);
             await _dbContext.SaveChangesAsync();
 
-            CrearGorraResponseDto response = new CrearGorraResponseDto
-            {
-                Nombre = data.Nombre,
-                Descripcion = data.Descripcion,
-                Valor = data.Precio,
-                Categoria = data.CategoriaId,
-                Activo = true,
-                Variaciones = data.GorraVariaciones.Select(a => new GorraVariacionesResponseDto
-                {
-                    Color = a.ColorId,
-                    Stock = a.Stock,
-                    SKU = a.Sku,
-                    Activo = true,
-                    Imagenes = a.GorraImagenes.Select(i => new GorrasImagenesResponseDto
-                    {
-                        Url = i.UrlImagen,
-                        ImagenPrincipal = i.EsPrincipal
-                    }).ToList(),
-                }).ToList()
-            };
+            CrearGorraResponseDto response = data.ToResponseDto();
 
             return Ok(new
             {
                 Mensaje = "Gorra creada con éxito en la base de datos",
-                Nombre = data.Nombre,
-                Precio = data.Precio
+                Gorra = response
             });
         }
 
+        [HttpGet]
+        public async Task<ActionResult> MostrarGorras()
+        {
+            List<Gorra> gorras = await _dbContext.Gorras.Where(g => g.Activo)
+                .Include(g => g.GorraVariaciones.Where(g => g.Activo))
+                .ThenInclude(a => a.GorraImagenes)
+                .ToListAsync();
+
+            if(gorras.Count <= 0)
+            {
+                return BadRequest("Error al obtener las gorras");
+            }
+
+            List<CrearGorraResponseDto> response = gorras.Select(a => a.ToResponseDto()).ToList();
+
+            return Ok(response);
+        }
     }
 }
