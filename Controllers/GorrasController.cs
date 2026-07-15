@@ -70,7 +70,7 @@ namespace RozzCaps.Controllers
             });
         }
 
-        [HttpGet("Stock")]
+        [HttpGet]
         public async Task<ActionResult> MostrarGorras()
         {
             List<Gorra> gorras = await _dbContext.Gorras.Where(g => g.Activo)
@@ -84,6 +84,54 @@ namespace RozzCaps.Controllers
             }
 
             List<CrearGorraResponseDto> response = gorras.Select(a => a.ToResponseDto()).ToList();
+
+            return Ok(response);
+        }
+
+        [HttpGet("buscar")]
+        public async Task<ActionResult<List<CrearGorraResponseDto>>> BuscarGorras([FromQuery] string request)
+        {
+            if (string.IsNullOrWhiteSpace(request))
+            {
+                return BadRequest(new { Mensaje = "Ingresa un término para realizar la búsqueda." });
+            }
+
+            string busqueda = request.Trim().ToLower();
+            string raiz = busqueda.Length >= 4 ? busqueda.Substring(0, 3) : busqueda;
+            // Intentar verificar si el usuario ingresó un número (para buscar por ID)
+            bool esNumero = int.TryParse(busqueda, out int idBuscado);
+
+            List<Gorra> resultados = await _dbContext.Gorras
+                .Include(c => c.Categoria)
+                .Include(g => g.GorraVariaciones.Where(v => v.Activo))
+                .ThenInclude(v => v.GorraImagenes)
+                .Where(g => g.Activo && (
+                    (esNumero && g.Id == idBuscado) || // Si es número, evalúa el ID
+
+                    g.Nombre.ToLower().Contains(busqueda) || // Coincidencia parcial en el Nombre
+                    g.Nombre.ToLower().Contains(raiz) ||
+
+                    (g.Categoria != null && (g.Categoria.Nombre.ToLower().Contains(busqueda) ||
+                    g.Categoria.Nombre.ToLower().Contains(raiz)
+                    )) ||
+
+                    g.GorraVariaciones.Any(v => v.Sku != null && v.Sku.ToLower().Contains(busqueda)) ||
+
+                    g.GorraVariaciones.Any(v => v.Color != null && (v.Color.Nombre.ToLower().Contains(busqueda) ||
+                    v.Color.Nombre.ToLower().Contains(raiz)
+
+                    ))
+                     // Coincidencia por SKU
+                ))
+
+                .ToListAsync();
+
+            if (resultados.Count == 0){
+
+                return NotFound("Gorra no encontrada");
+            }
+
+            List<CrearGorraResponseDto> response = resultados.Select(g => g.ToResponseDto()).ToList();
 
             return Ok(response);
         }
