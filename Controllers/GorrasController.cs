@@ -38,25 +38,8 @@ namespace RozzCaps.Controllers
                 return BadRequest("Esta categoria esta inactiva");
             }
 
-            Gorra data = new Gorra
-            {
-                Nombre = request.Nombre,
-                Descripcion = request.Descripcion,
-                Precio = request.Valor,
-                CategoriaId = request.Categoria,
-                Activo = true,
-                GorraVariaciones = request.Variaciones.Select(a => new GorraVariacione
-                {
-                    ColorId= a.Color,
-                    Stock = a.Stock,
-                    Activo = true,
-                    GorraImagenes = a.Imagenes.Select(i => new GorraImagene
-                    {
-                        UrlImagen = i.Url,
-                        EsPrincipal = i.ImagenPrincipal
-                    }).ToList(),
-                }).ToList()
-            };
+            Gorra data = request.ToEntity();
+                
             await _dbContext.AddAsync(data);
             await _dbContext.SaveChangesAsync();
 
@@ -115,7 +98,12 @@ namespace RozzCaps.Controllers
                     )) ||
 
                     g.GorraVariaciones.Any(v => v.Color != null && (v.Color.Nombre.ToLower().Contains(busqueda) || // por color
-                    v.Color.Nombre.ToLower().Contains(raiz)
+                    v.Color.Nombre.ToLower().Contains(raiz) ||
+
+                    g.GorraVariaciones.Any(t =>
+                    (busqueda == "ajustable" && v.Talla == null) ||
+                    (busqueda == "cerrada" && v.Talla != null) ||
+                    t.Talla != null && (v.Talla.ToLower() == busqueda))
 
                     ))
                      
@@ -125,7 +113,7 @@ namespace RozzCaps.Controllers
 
             if (resultados.Count == 0){
 
-                return NotFound("Gorra no encontrada");
+                return NotFound($"No se encontraron resultados para {request}");
             }
 
             List<CrearGorraResponseDto> response = resultados.Select(g => g.ToResponseDto()).ToList();
