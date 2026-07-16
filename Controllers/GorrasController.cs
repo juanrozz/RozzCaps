@@ -49,7 +49,6 @@ namespace RozzCaps.Controllers
                 {
                     ColorId= a.Color,
                     Stock = a.Stock,
-                    Sku = a.SKU,
                     Activo = true,
                     GorraImagenes = a.Imagenes.Select(i => new GorraImagene
                     {
@@ -88,7 +87,7 @@ namespace RozzCaps.Controllers
             return Ok(response);
         }
 
-        [HttpGet("buscar")]
+        [HttpGet("buscar")] //filtra los estilos de a una palabra se este escrita a medias o completa o por id
         public async Task<ActionResult<List<CrearGorraResponseDto>>> BuscarGorras([FromQuery] string request)
         {
             if (string.IsNullOrWhiteSpace(request))
@@ -106,22 +105,20 @@ namespace RozzCaps.Controllers
                 .Include(g => g.GorraVariaciones.Where(v => v.Activo))
                 .ThenInclude(v => v.GorraImagenes)
                 .Where(g => g.Activo && (
-                    (esNumero && g.Id == idBuscado) || // Si es número, evalúa el ID
+                    (esNumero && g.Id == idBuscado) || // por el ID
 
-                    g.Nombre.ToLower().Contains(busqueda) || // Coincidencia parcial en el Nombre
+                    g.Nombre.ToLower().Contains(busqueda) || // por el Nombre
                     g.Nombre.ToLower().Contains(raiz) ||
 
-                    (g.Categoria != null && (g.Categoria.Nombre.ToLower().Contains(busqueda) ||
+                    (g.Categoria != null && (g.Categoria.Nombre.ToLower().Contains(busqueda) || // por el nombre de la categoria
                     g.Categoria.Nombre.ToLower().Contains(raiz)
                     )) ||
 
-                    g.GorraVariaciones.Any(v => v.Sku != null && v.Sku.ToLower().Contains(busqueda)) ||
-
-                    g.GorraVariaciones.Any(v => v.Color != null && (v.Color.Nombre.ToLower().Contains(busqueda) ||
+                    g.GorraVariaciones.Any(v => v.Color != null && (v.Color.Nombre.ToLower().Contains(busqueda) || // por color
                     v.Color.Nombre.ToLower().Contains(raiz)
 
                     ))
-                     // Coincidencia por SKU
+                     
                 ))
 
                 .ToListAsync();
@@ -135,6 +132,8 @@ namespace RozzCaps.Controllers
 
             return Ok(response);
         }
+
+       
 
     }
 }

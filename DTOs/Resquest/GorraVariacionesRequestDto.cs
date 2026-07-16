@@ -4,7 +4,7 @@
     {
         public int Color { get; set; }
         public int Stock { get; set; }
-        public string SKU { get; set; } = string.Empty;
+        public string Talla { get; set; } = string.Empty;
         public List<GorrasImagenesRequestDto> Imagenes { get; set; } = new();
     }
 }

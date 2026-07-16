@@ -6,7 +6,7 @@ namespace RozzCaps.DTOs.Response
     {
         public int Color { get; set; }
         public int Stock { get; set; }
-        public string SKU { get; set; } = string.Empty;
+        public string? Talla { get; set; }
         public bool Activo { get; set; }
         public List<GorrasImagenesResponseDto> Imagenes { get; set; } = new();
     }

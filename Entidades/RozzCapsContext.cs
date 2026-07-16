@@ -79,13 +79,10 @@ public partial class RozzCapsContext : DbContext
 
         modelBuilder.Entity<GorraVariacione>(entity =>
         {
-            entity.HasIndex(e => e.Sku, "UQ_GorraVariaciones_SKU").IsUnique();
-
             entity.Property(e => e.Activo).HasDefaultValue(true);
-            entity.Property(e => e.Sku)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("SKU");
+            entity.Property(e => e.Talla)
+                .HasMaxLength(20)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Color).WithMany(p => p.GorraVariaciones)
                 .HasForeignKey(d => d.ColorId)

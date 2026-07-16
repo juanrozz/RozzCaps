@@ -23,7 +23,7 @@ namespace RozzCaps.Extensiones
                 {
                     Color = a.ColorId,
                     Stock = a.Stock,
-                    SKU = a.Sku,
+                    Talla = a.Talla,
                     Activo = true,
                     Imagenes = a.GorraImagenes.Select(i => new GorrasImagenesResponseDto
                     {

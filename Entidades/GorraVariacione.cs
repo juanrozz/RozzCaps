@@ -13,9 +13,9 @@ public partial class GorraVariacione
 
     public int Stock { get; set; }
 
-    public string Sku { get; set; } = null!;
-
     public bool Activo { get; set; }
+
+    public string? Talla { get; set; }
 
     public virtual Colore Color { get; set; } = null!;
 
