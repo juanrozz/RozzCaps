@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entidades\" />
+    <Folder Include="Entities\" />
   </ItemGroup>
 
 </Project>

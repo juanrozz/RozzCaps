@@ -25,6 +25,12 @@ public partial class RozzCapsContext : DbContext
 
     public virtual DbSet<GorraVariacione> GorraVariaciones { get; set; }
 
+    public virtual DbSet<Venta> Ventas { get; set; }
+
+    public virtual DbSet<VentaDetalle> VentaDetalles { get; set; }
+
+    public virtual DbSet<VentaEnvio> VentaEnvios { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -92,6 +98,43 @@ public partial class RozzCapsContext : DbContext
             entity.HasOne(d => d.Gorra).WithMany(p => p.GorraVariaciones)
                 .HasForeignKey(d => d.GorraId)
                 .HasConstraintName("FK_GorraVariaciones_Gorras");
+        });
+
+        modelBuilder.Entity<Venta>(entity =>
+        {
+            entity.Property(e => e.CodigoOrden).HasMaxLength(50);
+            entity.Property(e => e.CostoEnvio).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Estado)
+                .HasMaxLength(30)
+                .HasDefaultValue("Pendiente");
+            entity.Property(e => e.Fecha).HasDefaultValueSql("(getutcdate())");
+            entity.Property(e => e.PasarelaPagoId).HasMaxLength(100);
+            entity.Property(e => e.Total).HasColumnType("decimal(18, 2)");
+        });
+
+        modelBuilder.Entity<VentaDetalle>(entity =>
+        {
+            entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.GorraVariacion).WithMany(p => p.VentaDetalles)
+                .HasForeignKey(d => d.GorraVariacionId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
+            entity.HasOne(d => d.Venta).WithMany(p => p.VentaDetalles).HasForeignKey(d => d.VentaId);
+        });
+
+        modelBuilder.Entity<VentaEnvio>(entity =>
+        {
+            entity.Property(e => e.Barrio).HasMaxLength(100);
+            entity.Property(e => e.Ciudad).HasMaxLength(100);
+            entity.Property(e => e.ClienteEmail).HasMaxLength(150);
+            entity.Property(e => e.ClienteNombre).HasMaxLength(150);
+            entity.Property(e => e.ClienteTelefono).HasMaxLength(20);
+            entity.Property(e => e.CodigoPostal).HasMaxLength(20);
+            entity.Property(e => e.Departamento).HasMaxLength(100);
+            entity.Property(e => e.Direccion).HasMaxLength(250);
+
+            entity.HasOne(d => d.Venta).WithMany(p => p.VentaEnvios).HasForeignKey(d => d.VentaId);
         });
 
         OnModelCreatingPartial(modelBuilder);

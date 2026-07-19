@@ -22,4 +22,6 @@ public partial class GorraVariacione
     public virtual Gorra Gorra { get; set; } = null!;
 
     public virtual ICollection<GorraImagene> GorraImagenes { get; set; } = new List<GorraImagene>();
+
+    public virtual ICollection<VentaDetalle> VentaDetalles { get; set; } = new List<VentaDetalle>();
 }

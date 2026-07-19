@@ -21,7 +21,7 @@ namespace RozzCaps.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpPost("Crear")]
+        [HttpPost("CrearGorra")]
 
         public async Task<ActionResult<CrearGorraResponseDto>> CrearGorra([FromBody] CrearGorraRequestDto request)
         {
@@ -65,7 +65,7 @@ namespace RozzCaps.Controllers
 
             if (gorras.Count <= 0)
             {
-                return BadRequest("Error al obtener las gorras");
+                return Ok(new List<string>());
             }
 
             List<CrearGorraResponseDto> response = gorras.Select(a => a.ToResponseDto()).ToList();
@@ -90,7 +90,7 @@ namespace RozzCaps.Controllers
 
             IQueryable<Gorra> query =  _dbContext.Gorras
                 .Include(c => c.Categoria)
-                .Include(g => g.GorraVariaciones.Where(v => v.Activo))
+                .Include(g => g.GorraVariaciones)
                     .ThenInclude(v => v.GorraImagenes)
                 .Include(g => g.GorraVariaciones)
                     .ThenInclude(c => c.Color);
@@ -116,8 +116,8 @@ namespace RozzCaps.Controllers
                             v.Activo && (
                                 (v.Color != null && (v.Color.Nombre.Contains(palabraActual) || 
                                     v.Color.Nombre.Contains(raiz))) ||
-                                (busquedaTalla == "ajustable" && v.Talla == null) ||
-                                (busquedaTalla == "cerrada" && v.Talla != null) ||
+                                (palabraActual == "ajustable" && v.Talla == null) ||
+                                (palabraActual == "cerrada" && v.Talla != null) ||
                                 (v.Talla != null && v.Talla.Contains(palabraActual)) ||
                                 (v.Talla != null && v.Talla.Contains(busquedaTalla))
 
