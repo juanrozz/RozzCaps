@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RozzCaps.Entidades;
+namespace RozzCaps.Entities;
 
 public partial class VentaEnvio
 {
@@ -24,6 +24,8 @@ public partial class VentaEnvio
     public string Departamento { get; set; } = null!;
 
     public string? CodigoPostal { get; set; }
+
+    public string DocumentoIdentidad { get; set; } = null!;
 
     public virtual Venta Venta { get; set; } = null!;
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RozzCaps.Entidades;
+namespace RozzCaps.Entities;
 
 public partial class GorraVariacione
 {

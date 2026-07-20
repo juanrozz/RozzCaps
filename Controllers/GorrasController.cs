@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RozzCaps.Attributes;
 using RozzCaps.DTOs.Response;
 using RozzCaps.DTOs.Resquest;
-using RozzCaps.Entidades;
+using RozzCaps.Entities;
 using RozzCaps.Extensiones;
 using System.Text.RegularExpressions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -21,42 +22,8 @@ namespace RozzCaps.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpPost("CrearGorra")]
-
-        public async Task<ActionResult<CrearGorraResponseDto>> CrearGorra([FromBody] CrearGorraRequestDto request)
-        {
-            if (request.Categoria <= 0)
-            {
-                return BadRequest("esta categoria no existe mano");
-            }
-
-            Categoria? existe = await _dbContext.Categorias.FirstOrDefaultAsync(e => e.Id == request.Categoria);
-
-            if (existe == null)
-            {
-                return BadRequest("Esta categoria no existe paisano");
-            }
-            if (existe.Activo == false)
-            {
-                return BadRequest("Esta categoria esta inactiva");
-            }
-
-            Gorra data = request.ToEntity();
-
-            await _dbContext.AddAsync(data);
-            await _dbContext.SaveChangesAsync();
-
-            CrearGorraResponseDto response = data.ToResponseDto();
-
-            return Ok(new
-            {
-                Mensaje = "Gorra creada con éxito en la base de datos",
-                Gorra = response
-            });
-        }
-
-        [HttpGet]
-        public async Task<ActionResult> MostrarGorras()
+        [HttpGet("Catalogo")]
+        public async Task<ActionResult> Catalogo()
         {
             List<Gorra> gorras = await _dbContext.Gorras.Where(g => g.Activo)
                 .Include(g => g.GorraVariaciones.Where(g => g.Activo))
@@ -138,7 +105,6 @@ namespace RozzCaps.Controllers
             return Ok(response);
         }
 
-
-
+       
     }
 }

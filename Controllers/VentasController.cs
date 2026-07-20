@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RozzCaps.DTOs;
 using RozzCaps.DTOs.Response;
 using RozzCaps.DTOs.Resquest;
-using RozzCaps.Entidades;
+using RozzCaps.Entities;
 using RozzCaps.Services;
 
 namespace RozzCaps.Controllers
@@ -61,7 +61,6 @@ namespace RozzCaps.Controllers
                     subtotalGorras += (variacion.Gorra.Precio * item.Cantidad);
                     variacion.Stock -= item.Cantidad;
 
-                    // Insertamos directamente el objeto del dominio
                     detallesParaGuardar.Add(new VentaDetalle
                     {
                         GorraVariacionId = variacion.Id,
@@ -89,11 +88,13 @@ namespace RozzCaps.Controllers
                             ClienteNombre = request.DatosEnvio.ClienteNombre,
                             ClienteEmail = request.DatosEnvio.ClienteEmail,
                             ClienteTelefono = request.DatosEnvio.ClienteTelefono,
+                            DocumentoIdentidad = request.DatosEnvio.DocumentoIdentidad,
                             Direccion = request.DatosEnvio.Direccion,
                             Barrio = request.DatosEnvio.Barrio,
                             Ciudad = request.DatosEnvio.Ciudad,
                             Departamento = request.DatosEnvio.Departamento,
                             CodigoPostal = request.DatosEnvio.CodigoPostal
+                           
                         }
                     },
                   

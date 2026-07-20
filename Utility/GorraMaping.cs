@@ -1,7 +1,7 @@
 ﻿using Azure.Core;
 using RozzCaps.DTOs.Response;
 using RozzCaps.DTOs.Resquest;
-using RozzCaps.Entidades;
+using RozzCaps.Entities;
 using System.Text.RegularExpressions;
 
 namespace RozzCaps.Extensiones

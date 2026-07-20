@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace RozzCaps.Entidades;
+namespace RozzCaps.Entities;
 
 public partial class RozzCapsContext : DbContext
 {
@@ -31,7 +31,10 @@ public partial class RozzCapsContext : DbContext
 
     public virtual DbSet<VentaEnvio> VentaEnvios { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-V72NP41\\SQLEXPRESS;Database=RozzCaps;Trusted_Connection=True;TrustServerCertificate=True;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Categoria>(entity =>
@@ -133,6 +136,9 @@ public partial class RozzCapsContext : DbContext
             entity.Property(e => e.CodigoPostal).HasMaxLength(20);
             entity.Property(e => e.Departamento).HasMaxLength(100);
             entity.Property(e => e.Direccion).HasMaxLength(250);
+            entity.Property(e => e.DocumentoIdentidad)
+                .HasMaxLength(20)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Venta).WithMany(p => p.VentaEnvios).HasForeignKey(d => d.VentaId);
         });

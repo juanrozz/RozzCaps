@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RozzCaps.Entidades;
+using RozzCaps.Entities;
 using RozzCaps.Services;
 
 var builder = WebApplication.CreateBuilder(args);
